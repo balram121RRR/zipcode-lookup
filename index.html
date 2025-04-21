@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ZIP Code Lookup Tool</title>
+  <title>ZIP / Postal Code Lookup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f2f2f2; }
-    h2 { font-size: 24px; }
-    input, button {
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    h2 { font-size: 24px; text-align: center; }
+    input, button, select {
       padding: 10px;
       margin: 10px 0;
       width: 100%;
@@ -31,25 +31,39 @@
   </style>
 </head>
 <body>
-  <h2>ZIP Code Lookup Tool</h2>
-  <input type="text" id="zip" placeholder="Enter ZIP Code (e.g. 90210)">
-  <button onclick="lookupZip()">Lookup ZIP Code</button>
+  <h2>ZIP / Postal Code Lookup Tool</h2>
+
+  <select id="country">
+    <option value="us">🇺🇸 United States</option>
+    <option value="ca">🇨🇦 Canada</option>
+    <option value="gb">🇬🇧 United Kingdom</option>
+    <option value="in">🇮🇳 India</option>
+    <option value="de">🇩🇪 Germany</option>
+    <option value="fr">🇫🇷 France</option>
+    <option value="au">🇦🇺 Australia</option>
+  </select>
+
+  <input type="text" id="zip" placeholder="Enter ZIP / Postal Code">
+  <button onclick="lookupZip()">Lookup</button>
+
   <div id="result"></div>
 
   <script>
     async function lookupZip() {
+      const country = document.getElementById('country').value;
       const zip = document.getElementById('zip').value.trim();
       const result = document.getElementById('result');
       result.innerHTML = 'Looking up...';
 
       try {
-        const response = await fetch(`https://api.zippopotam.us/us/${zip}`);
-        if (!response.ok) throw new Error('ZIP code not found');
+        const response = await fetch(`https://api.zippopotam.us/${country}/${zip}`);
+        if (!response.ok) throw new Error('Code not found');
         const data = await response.json();
         const place = data.places[0];
         result.innerHTML = `
-          <strong>City:</strong> ${place['place name']}<br>
-          <strong>State:</strong> ${place['state']}<br>
+          <strong>Country:</strong> ${data.country}<br>
+          <strong>Place:</strong> ${place['place name']}<br>
+          <strong>State/Province:</strong> ${place['state']}<br>
           <strong>Latitude:</strong> ${place['latitude']}<br>
           <strong>Longitude:</strong> ${place['longitude']}
         `;
