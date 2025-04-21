@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ZIP Code Lookup Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; margin: 0; background: #f9f9f9; }
+    h2 { font-size: 24px; margin-bottom: 20px; }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #3f51b5;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background-color: #303f9f; }
+    #result {
+      background: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>ZIP Code Lookup Tool</h2>
+  <input type="text" id="zipcode" placeholder="Enter ZIP Code (e.g., 90210)">
+  <button onclick="lookupZip()">Lookup</button>
+  <div id="result"></div>
+
+  <script>
+    async function lookupZip() {
+      const zip = document.getElementById('zipcode').value;
+      const resultEl = document.getElementById('result');
+      resultEl.innerText = 'Looking up...';
+      try {
+        const res = await fetch('https://api.zippopotam.us/us/' + zip);
+        if (!res.ok) throw new Error('ZIP code not found');
+        const data = await res.json();
+        const place = data.places[0];
+        resultEl.innerHTML = `
+          <strong>City:</strong> ${place['place name']}<br>
+          <strong>State:</strong> ${place['state']}<br>
+          <strong>Country:</strong> ${data.country}<br>
+          <strong>Latitude:</strong> ${place.latitude}<br>
+          <strong>Longitude:</strong> ${place.longitude}
+        `;
+      } catch (e) {
+        resultEl.innerHTML = '<span style="color:red;">' + e.message + '</span>';
+      }
+    }
+  </script>
+</body>
+</html>
